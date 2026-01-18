@@ -1,0 +1,36 @@
+{
+  "name": "hear-me-out",
+  "version": "1.0.0",
+  "description": "A platform for sharing concepts, inventions, and business ideas with IP protection and investment support",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "lint": "npm run lint:client && npm run lint:server",
+    "lint:client": "cd client && npm run lint",
+    "lint:server": "cd server && npm run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "test": "npm run test:client && npm run test:server",
+    "test:client": "cd client && npm test",
+    "test:server": "cd server && npm test"
+  },
+  "keywords": [
+    "ideas",
+    "inventions",
+    "crowdfunding",
+    "intellectual-property",
+    "mern",
+    "typescript"
+  ],
+  "author": "Matt Linder",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "prettier": "^3.2.4"
+  }
+}
