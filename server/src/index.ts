@@ -1,8 +1,11 @@
+// Load environment variables FIRST before any other imports
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 
 import { connectDatabase } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
@@ -12,9 +15,7 @@ import healthRoutes from './routes/health';
 import userRoutes from './routes/users';
 import ideaRoutes from './routes/ideas';
 import contributionRoutes from './routes/contributions';
-
-// Load environment variables
-dotenv.config();
+import adminRoutes from './routes/admin';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -34,6 +35,7 @@ app.use('/api/health', healthRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/ideas', ideaRoutes);
 app.use('/api/contributions', contributionRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Error handling
 app.use(errorHandler);

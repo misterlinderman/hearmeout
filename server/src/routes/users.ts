@@ -5,6 +5,40 @@ import { User } from '../models';
 
 const router = Router();
 
+// Sync user from Auth0 (creates if doesn't exist, updates if exists)
+router.post('/sync', checkJwt, asyncHandler(async (req: Request, res: Response) => {
+  const auth0Id = getUserId(req);
+  
+  if (!auth0Id) {
+    throw new ApiError(401, 'Unauthorized');
+  }
+
+  const { email, name, picture } = req.body;
+
+  let user = await User.findOne({ auth0Id });
+
+  if (!user) {
+    // Create new user
+    user = await User.create({
+      auth0Id,
+      email: email || `${auth0Id.replace('|', '_')}@hearmeout.app`,
+      name: name || 'Anonymous',
+      picture,
+    });
+  } else {
+    // Optionally update picture if changed
+    if (picture && picture !== user.picture) {
+      user.picture = picture;
+      await user.save();
+    }
+  }
+
+  res.json({
+    success: true,
+    data: user,
+  });
+}));
+
 // Get current user profile
 router.get('/me', checkJwt, asyncHandler(async (req: Request, res: Response) => {
   const auth0Id = getUserId(req);
@@ -17,12 +51,22 @@ router.get('/me', checkJwt, asyncHandler(async (req: Request, res: Response) => 
 
   // Create user if doesn't exist (first login)
   if (!user) {
-    const payload = req.auth?.payload;
+    const payload = req.auth?.payload as Record<string, any>;
+    // Auth0 standard claims - try multiple possible locations
+    const email = payload?.email || 
+                  payload?.['https://hearmeout.app/email'] || 
+                  `${auth0Id.replace('|', '_')}@hearmeout.app`;
+    const name = payload?.name || 
+                 payload?.nickname ||
+                 payload?.['https://hearmeout.app/name'] || 
+                 email.split('@')[0];
+    const picture = payload?.picture || payload?.['https://hearmeout.app/picture'];
+    
     user = await User.create({
       auth0Id,
-      email: payload?.['https://hearmeout.app/email'] || payload?.email || 'unknown@example.com',
-      name: payload?.['https://hearmeout.app/name'] || payload?.name || 'Anonymous',
-      picture: payload?.picture,
+      email,
+      name,
+      picture,
     });
   }
 

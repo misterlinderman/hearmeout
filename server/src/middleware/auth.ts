@@ -1,5 +1,5 @@
 import { auth, AuthResult } from 'express-oauth2-jwt-bearer';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 // Extend Express Request type
 declare global {
@@ -10,12 +10,24 @@ declare global {
   }
 }
 
+// Lazy initialization to ensure env vars are loaded
+let _checkJwt: RequestHandler | null = null;
+
+const getCheckJwt = (): RequestHandler => {
+  if (!_checkJwt) {
+    _checkJwt = auth({
+      audience: process.env.AUTH0_AUDIENCE,
+      issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
+      tokenSigningAlg: 'RS256',
+    });
+  }
+  return _checkJwt;
+};
+
 // Auth0 JWT validation middleware
-export const checkJwt = auth({
-  audience: process.env.AUTH0_AUDIENCE,
-  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
-  tokenSigningAlg: 'RS256',
-});
+export const checkJwt: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+  return getCheckJwt()(req, res, next);
+};
 
 // Optional auth - doesn't require auth but attaches user if present
 export const optionalAuth = (req: Request, res: Response, next: NextFunction) => {
@@ -25,7 +37,7 @@ export const optionalAuth = (req: Request, res: Response, next: NextFunction) =>
     return next();
   }
 
-  checkJwt(req, res, (err) => {
+  getCheckJwt()(req, res, (err) => {
     // If there's an error, just continue without auth
     // The user will be treated as unauthenticated
     next();

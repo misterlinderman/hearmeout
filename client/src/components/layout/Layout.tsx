@@ -14,7 +14,10 @@ import {
   PlusCircleIcon,
   ArrowRightOnRectangleIcon,
   ChartBarIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
+
+const ADMIN_EMAILS = ['linder@askanddeliver.com'];
 
 const navigation = [
   { name: 'Home', href: '/', icon: HomeIcon },
@@ -30,6 +33,8 @@ export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
   const location = useLocation();
+
+  const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
 
   const handleLogout = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
@@ -193,6 +198,20 @@ export default function Layout() {
               
               {isAuthenticated && (
                 <li className="mt-auto space-y-2">
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className={classNames(
+                        location.pathname === '/admin'
+                          ? 'bg-purple-500/20 text-purple-400'
+                          : 'text-purple-400 hover:bg-purple-500/10',
+                        'group -mx-2 flex gap-x-3 rounded-lg p-3 text-sm font-medium leading-6 transition-all duration-200'
+                      )}
+                    >
+                      <ShieldCheckIcon className="h-6 w-6 shrink-0" aria-hidden="true" />
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <Link
                     to="/submit"
                     className="group -mx-2 flex gap-x-3 rounded-xl p-3 text-sm font-semibold leading-6 bg-gradient-to-r from-amber-500 to-orange-500 text-stone-900 hover:from-amber-400 hover:to-orange-400 transition-all shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30"
@@ -331,6 +350,22 @@ export default function Layout() {
                             </Link>
                           )}
                         </Menu.Item>
+                        {isAdmin && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/admin"
+                                className={classNames(
+                                  active ? 'bg-stone-800' : '',
+                                  'flex items-center gap-3 px-4 py-2 text-sm text-purple-400'
+                                )}
+                              >
+                                <ShieldCheckIcon className="h-5 w-5" />
+                                Admin Dashboard
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        )}
                         <div className="my-1 border-t border-stone-800" />
                         <Menu.Item>
                           {({ active }) => (

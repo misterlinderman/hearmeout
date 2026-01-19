@@ -12,6 +12,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { IdeaCategory, IdeaStage, ResourceType, IdeaSubmission } from '../types';
 import toast from 'react-hot-toast';
+import api from '../services/api';
 
 const categories: { value: IdeaCategory; label: string; description: string }[] = [
   { value: 'invention', label: 'Invention', description: 'Physical or digital products and devices' },
@@ -134,13 +135,18 @@ export default function IdeaSubmit() {
         isPublic,
       };
 
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      toast.success('Idea submitted successfully!');
-      navigate('/dashboard');
-    } catch (error) {
-      toast.error('Failed to submit idea. Please try again.');
+      // Submit to API
+      const response = await api.createIdea(submission);
+      
+      if (response.success) {
+        toast.success('Idea submitted successfully! It will be reviewed by our team.');
+        navigate('/dashboard');
+      } else {
+        throw new Error('Submission failed');
+      }
+    } catch (error: any) {
+      console.error('Error submitting idea:', error);
+      toast.error(error.response?.data?.message || 'Failed to submit idea. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

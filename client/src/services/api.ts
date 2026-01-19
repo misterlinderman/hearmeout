@@ -63,6 +63,11 @@ class ApiService {
     return response.data;
   }
 
+  async syncUser(userData: { email: string; name: string; picture?: string }): Promise<ApiResponse<User>> {
+    const response = await this.client.post('/users/sync', userData);
+    return response.data;
+  }
+
   async updateUser(data: Partial<User>): Promise<ApiResponse<User>> {
     const response = await this.client.put('/users/me', data);
     return response.data;

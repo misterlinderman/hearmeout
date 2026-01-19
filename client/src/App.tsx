@@ -11,6 +11,7 @@ import Explore from './pages/Explore';
 import Dashboard from './pages/Dashboard';
 import IdeaSubmit from './pages/IdeaSubmit';
 import Profile from './pages/Profile';
+import Admin from './pages/Admin';
 
 // Components
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -91,6 +92,15 @@ function AppContent() {
                 <h1 className="text-2xl font-bold text-white mb-4">Idea Detail Page</h1>
                 <p className="text-stone-400">This page will display full idea details, comments, and contribution options.</p>
               </div>
+            }
+          />
+          {/* Admin route - protected by email check in component */}
+          <Route
+            path="admin"
+            element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
             }
           />
           {/* 404 */}
