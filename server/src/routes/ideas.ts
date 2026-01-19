@@ -153,7 +153,7 @@ router.post('/', checkJwt, asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(404, 'User not found');
   }
 
-  const { title, tagline, description, category, stage, resources, tags, isPublic } = req.body;
+  const { title, tagline, description, category, stage, resources, tags, isPublic, coverImage } = req.body;
 
   const idea = await Idea.create({
     title,
@@ -166,6 +166,7 @@ router.post('/', checkJwt, asyncHandler(async (req: Request, res: Response) => {
     isPublic: isPublic !== false,
     creator: user._id,
     status: 'pending-review',
+    ...(coverImage && { coverImage }),
   });
 
   // Update user's idea count

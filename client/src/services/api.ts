@@ -144,7 +144,7 @@ class ApiService {
 
   // ============ Contributions ============
   async getContributionsForIdea(ideaId: string): Promise<ApiResponse<Contribution[]>> {
-    const response = await this.client.get(`/ideas/${ideaId}/contributions`);
+    const response = await this.client.get(`/contributions/idea/${ideaId}`);
     return response.data;
   }
 

@@ -9,6 +9,7 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   CheckIcon,
+  PhotoIcon,
 } from '@heroicons/react/24/outline';
 import { IdeaCategory, IdeaStage, ResourceType, IdeaSubmission } from '../types';
 import toast from 'react-hot-toast';
@@ -66,6 +67,7 @@ export default function IdeaSubmit() {
   const [tagInput, setTagInput] = useState('');
   const [resources, setResources] = useState<ResourceRequest[]>([]);
   const [isPublic, setIsPublic] = useState(true);
+  const [coverImage, setCoverImage] = useState('');
 
   // Resource form state
   const [showResourceForm, setShowResourceForm] = useState(false);
@@ -118,7 +120,7 @@ export default function IdeaSubmit() {
 
     setIsSubmitting(true);
     try {
-      const submission: IdeaSubmission = {
+      const submission: IdeaSubmission & { coverImage?: string } = {
         title,
         tagline,
         description,
@@ -133,6 +135,7 @@ export default function IdeaSubmit() {
         })),
         tags,
         isPublic,
+        ...(coverImage && { coverImage }),
       };
 
       // Submit to API
@@ -341,6 +344,43 @@ export default function IdeaSubmit() {
               </div>
               <p className="text-xs text-stone-500 mt-1">{tags.length}/10 tags</p>
             </div>
+
+            {/* Cover Image */}
+            <div className="pt-6 border-t border-stone-800">
+              <label className="block text-sm font-medium text-white mb-2 flex items-center gap-2">
+                <PhotoIcon className="w-5 h-5 text-amber-400" />
+                Cover Image (optional)
+              </label>
+              {coverImage && (
+                <div className="relative rounded-xl overflow-hidden mb-4">
+                  <img
+                    src={coverImage}
+                    alt="Cover preview"
+                    className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '';
+                      setCoverImage('');
+                    }}
+                  />
+                  <button
+                    onClick={() => setCoverImage('')}
+                    className="absolute top-2 right-2 p-2 rounded-lg bg-stone-900/80 text-white hover:bg-stone-800 transition-colors"
+                  >
+                    <XMarkIcon className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+              <input
+                type="url"
+                value={coverImage}
+                onChange={(e) => setCoverImage(e.target.value)}
+                placeholder="https://example.com/your-image.jpg"
+                className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-stone-700 text-white placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              />
+              <p className="text-xs text-stone-500 mt-2">
+                Add an image URL to make your idea stand out. You can also add this later.
+              </p>
+            </div>
           </div>
         )}
 
@@ -496,6 +536,17 @@ export default function IdeaSubmit() {
             <h2 className="text-xl font-semibold text-white">Review Your Submission</h2>
 
             <div className="space-y-4">
+              {/* Cover Image Preview */}
+              {coverImage && (
+                <div className="rounded-xl overflow-hidden">
+                  <img
+                    src={coverImage}
+                    alt="Cover preview"
+                    className="w-full h-48 object-cover"
+                  />
+                </div>
+              )}
+
               <div className="p-4 rounded-xl bg-stone-800/50">
                 <p className="text-xs text-stone-500 uppercase tracking-wide mb-1">Category & Stage</p>
                 <p className="text-white">

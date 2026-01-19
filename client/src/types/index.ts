@@ -83,6 +83,7 @@ export interface Idea {
   viewCount: number;
   likeCount: number;
   contributionCount: number;
+  likedBy?: string[];
   isPublic: boolean;
   createdAt: string;
   updatedAt: string;

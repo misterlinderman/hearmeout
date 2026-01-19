@@ -10,6 +10,8 @@ import Home from './pages/Home';
 import Explore from './pages/Explore';
 import Dashboard from './pages/Dashboard';
 import IdeaSubmit from './pages/IdeaSubmit';
+import IdeaDetail from './pages/IdeaDetail';
+import IdeaEdit from './pages/IdeaEdit';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 
@@ -84,14 +86,15 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-          {/* Placeholder for idea detail page */}
+          {/* Idea detail page */}
+          <Route path="ideas/:id" element={<IdeaDetail />} />
+          {/* Idea edit page - protected */}
           <Route
-            path="ideas/:id"
+            path="ideas/:id/edit"
             element={
-              <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-                <h1 className="text-2xl font-bold text-white mb-4">Idea Detail Page</h1>
-                <p className="text-stone-400">This page will display full idea details, comments, and contribution options.</p>
-              </div>
+              <ProtectedRoute>
+                <IdeaEdit />
+              </ProtectedRoute>
             }
           />
           {/* Admin route - protected by email check in component */}
